@@ -3,8 +3,8 @@ sudo: required
 addons:
   apt:
     packages:
-      - qemu-user-static
-      - binfmt-support
+#      - qemu-user-static
+#      - binfmt-support
       - docker-ce
 
 services:
