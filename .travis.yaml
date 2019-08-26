@@ -17,4 +17,5 @@ env:
 
 script:
   - docker run --rm --privileged multiarch/qemu-user-static:$QUS_VERSION --reset -p yes
-  - docker run --rm -it arm64v8/alpine:3.10 apk add gcc
+  - docker run --rm -it -v $(pwd):/workdir arm64v8/alpine:3.10 /workdir/setup
+  - ls -la

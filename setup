@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+
+set -euxo pipefail
+
+apk add alpine-sdk build-base apk-tools alpine-conf busybox fakeroot xorriso squashfs-tools
+adduser root abuild
+
+su -s /bin/sh root -c groups
+
+su -s /bin/sh root -c /workdir/build-alpine
