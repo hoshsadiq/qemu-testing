@@ -19,6 +19,7 @@ env:
 
 script:
 #  - docker run --rm --privileged multiarch/qemu-user-static:register
+  - ls -al /proc/sys/fs/binfmt_misc/
   - docker run --rm --privileged multiarch/qemu-user-static:$QUS_VERSION --reset -p yes
 #  - ls /proc/sys/fs/binfmt_misc
 #  - cat /proc/sys/fs/binfmt_misc/*
