@@ -1,0 +1,20 @@
+dist: trusty
+sudo: required
+addons:
+  apt:
+    packages:
+      - qemu-user-static
+      - binfmt-support
+      - docker-ce
+
+services:
+  - docker
+
+env:
+  global:
+    - QUS_VERSION=v4.0.0-4
+
+
+script:
+  - docker run --rm --privileged multiarch/qemu-user-static:$QUS_VERSION --reset -p yes
+  - docker run --rm -it arm64v8/alpine:3.10 apk add gcc
