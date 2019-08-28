@@ -14,4 +14,4 @@ su root -c groups
 cp /workdir/mkimg.custom.sh /tmp/aports-3.10.1/scripts
 /tmp/aports-3.10.1/scripts/mkimage.sh --help || true
 
-su root -c /workdir/mkimage.sh
+su root -c "sh -xc /workdir/mkimage.sh"
