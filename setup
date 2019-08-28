@@ -3,15 +3,15 @@
 set -euxo pipefail
 
 apk add --no-cache --no-progress alpine-sdk build-base apk-tools alpine-conf busybox fakeroot xorriso squashfs-tools
-curl -fsSL https://github.com/alpinelinux/aports/archive/v3.10.1.tar.gz -o- | tar xzvf - -C /tmp/ aports-3.10.1/scripts aports-3.10.1/main
+curl -fsSL https://github.com/alpinelinux/aports/archive/v3.10.1.tar.gz -o- \
+    | tar xzf - -C /workdir/ aports-3.10.1/scripts aports-3.10.1/main
 
 abuild-keygen -i -a -n
-
 
 adduser root abuild
 su root -c groups
 
-cp /workdir/mkimg.custom.sh /tmp/aports-3.10.1/scripts
-/tmp/aports-3.10.1/scripts/mkimage.sh --help || true
+cp /workdir/mkimg.custom.sh /workdir/aports-3.10.1/scripts
+/workdir/aports-3.10.1/scripts/mkimage.sh --help || true
 
 su root -c /workdir/mkimage.sh
