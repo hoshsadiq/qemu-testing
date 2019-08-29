@@ -25,7 +25,7 @@ script:
   - docker run --rm --privileged multiarch/qemu-user-static:$QUS_VERSION --reset -p yes
   - ls -al /proc/sys/fs/binfmt_misc/
   - docker run --rm -it -v $(pwd):/workdir arm64v8/alpine:3.10 /workdir/setup
-  - ls -la
+  - ls -la /workdir/*/scripts/build
 
 # todo potentially try chroot instead of docker
 # when docker or chroot ready, generate aarch64 pi/alpine-aarch64.tar.gz
