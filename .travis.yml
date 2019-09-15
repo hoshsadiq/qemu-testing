@@ -1,35 +1,13 @@
 dist: bionic
 language: minimal
 
-addons:
-  apt:
-    packages:
-#      - qemu-user-static
-#      - binfmt-support
-      - docker-ce
-
-services:
-  - docker
-
 git:
   depth: 1
 
-env:
-  global:
-    - QUS_VERSION=v4.0.0-4
-
+before_script:
+  - set -e
+  - curl -fsSL -O "https://raw.githubusercontent.com/hoshsadiq/alpine-chroot-install/destroy-script/alpine-chroot-install" # todo checksum this
 
 script:
-  - set -e
-  - ls -al /proc/sys/fs/binfmt_misc/
-  - docker run --rm --privileged multiarch/qemu-user-static:$QUS_VERSION --reset -p yes
-  - ls -al /proc/sys/fs/binfmt_misc/
-  - docker run --rm -it -v $(pwd):/workdir arm64v8/alpine:3.10 /workdir/setup
-  - ls -la aports-3.10.1/scripts/build
-
-# todo potentially try chroot instead of docker
-# when docker or chroot ready, generate aarch64 pi/alpine-aarch64.tar.gz
-# create image & mount
-# extract tar.gz into mount
-# release tar.gz + img
-# repeat for armhf
+  - ./make-image
+  - ls -la

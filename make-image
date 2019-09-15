@@ -1,0 +1,100 @@
+#!/usr/bin/env bash
+
+# these scripts are based on https://github.com/knoopx/alpine-raspberry-pi.
+
+set -xe
+
+alpine_branch=v3.10
+arch=aarch64
+
+script_dir=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+
+tmpdir="$(mktemp -d -t rpi-img.XXXXXXXXXX)"
+artifact_file="$script_dir/alpine-rpi-$alpine_branch-$arch.img"
+rootfs="$tmpdir/alpine-rootfs"
+boot_dir="$rootfs/boot"
+
+clean_up() {
+	[ -x "$rootfs/destroy" ] && "$rootfs/destroy" -y || true
+	findmnt -M "$rootfs" && umount "$rootfs"
+	[ -n "$tmpdir" ] && rm -rf "$tmpdir"
+	losetup --detach-all # todo this should be only the current loop
+}
+trap clean_up EXIT SIGTERM SIGINT SIGQUIT
+
+run_bootstrap() {
+    find "$script_dir/bootstrap" -name "*.sh" -print0 \
+     | sort -z \
+     | while read -d $'\0' file; do
+        cat "$file" | "$rootfs/enter-chroot"
+    done
+}
+
+truncate -s 2G "$artifact_file"
+
+{
+    echo "o"
+    echo "n"
+    echo "p"
+    echo "1"
+    echo ""
+    echo "+128MB"
+    echo "t"
+    echo "c"
+    echo "n"
+    echo "p"
+    echo "2"
+    echo ""
+    echo ""
+    echo "w"
+} | fdisk -H 255 -S 63 "$artifact_file"
+
+LOOP_DEV=$(losetup --partscan --show --find "$artifact_file")
+BOOT_DEV="$LOOP_DEV"p1
+ROOT_DEV="$LOOP_DEV"p2
+
+# format partitions
+mkfs.fat -F32 -n ALPINE "$BOOT_DEV"
+mkfs.ext4 "$ROOT_DEV"
+mkdir -p "$rootfs"
+mount --make-private "$ROOT_DEV" "$rootfs"
+mkdir -p "$boot_dir"
+mount --make-private "$BOOT_DEV" "$boot_dir"
+
+sudo ./alpine-chroot-install -a "$arch" -b "$alpine_branch" -d "$rootfs"
+
+run_bootstrap
+
+rm -rf "$rootfs/var/lib/apt/lists/"*
+rm -rf "$rootfs/var/cache/apk/"*
+rm -rf "$rootfs/root/"* "$rootfs/root/".* || true
+#rm -rf "$rootfs/bootstrap/"
+rm "$rootfs/enter-chroot"
+rm "$rootfs/destroy"
+rm "$rootfs/etc/resolv.conf"
+rm "$rootfs/env.sh"
+
+umount -lf "$rootfs"
+
+# shrink image
+ROOT_PART_START=$(parted -ms "$artifact_file" unit B print | awk -F: 'END{gsub("B$", "", $2); print $2}')
+ROOT_BLOCK_SIZE=$(tune2fs -l "$ROOT_DEV" | awk -F': *' '/^Block size:/{print $2}')
+ROOT_MIN_SIZE=$(resize2fs -P "$ROOT_DEV" 2>/dev/null | awk -F': *' '/:/{print $2}')
+
+# shrink fs
+e2fsck -f -p "$ROOT_DEV"
+resize2fs -p "$ROOT_DEV" "$ROOT_MIN_SIZE"
+
+# shrink partition
+PART_END=$(($ROOT_PART_START + ($ROOT_MIN_SIZE * $ROOT_BLOCK_SIZE)))
+parted ---pretend-input-tty "$artifact_file" unit B resizepart 2 "$PART_END" yes
+
+losetup -d "$LOOP_DEV"
+
+# truncate free space
+FREE_START=$(parted -ms "$artifact_file" unit B print free | awk -F: 'END{gsub("B$", "", $2); print $2}')
+truncate -s "$FREE_START" "$artifact_file"
+
+gzip -f "$artifact_file"
+
+echo "DONE."
