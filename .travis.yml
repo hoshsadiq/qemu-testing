@@ -9,5 +9,5 @@ before_script:
   - curl -fsSL -O "https://raw.githubusercontent.com/hoshsadiq/alpine-chroot-install/destroy-script/alpine-chroot-install" # todo checksum this
 
 script:
-  - ./make-image
+  - sudo ./make-image
   - ls -la
