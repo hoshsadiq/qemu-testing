@@ -7,6 +7,7 @@ git:
 before_script:
   - set -e
   - curl -fsSL -O "https://raw.githubusercontent.com/hoshsadiq/alpine-chroot-install/destroy-script/alpine-chroot-install" # todo checksum this
+  - chmod +x alpine-chroot-install
 
 script:
   - ls -la
