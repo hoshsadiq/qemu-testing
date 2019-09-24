@@ -1,6 +1,6 @@
 #!/bin/sh
 
-set -xeu
+set -eux
 
 apk add linux-rpi
 apk add linux-firmware-brcm

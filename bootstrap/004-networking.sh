@@ -1,6 +1,6 @@
 #!/bin/sh
 
-set -xe
+set -eux
 
 cat <<EOF > /etc/network/interfaces
 auto lo

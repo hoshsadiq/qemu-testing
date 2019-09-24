@@ -1,13 +1,13 @@
 #!/bin/sh
 
-set -xe
+set -eux
 
 # ideally these will be installed before on first boot but internet is not guaranteed
 apk add --virtual resizepart e2fsprogs-extra parted
 
 cat <<EOF > /usr/bin/first-boot
 #!/bin/sh
-set -xe
+set -eux
 
 parted --script /dev/mmcblk0 resizepart 2 yes 100%
 partprobe

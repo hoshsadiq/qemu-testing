@@ -2,16 +2,14 @@
 
 # these scripts are based on https://github.com/knoopx/alpine-raspberry-pi.
 
-set -xe
-
-alpine_branch=v3.10
-arch=aarch64
-export RPI_CI_DTB_FILES=".*-rpi-3-b-plus.dtb$"
+set -eux
 
 script_dir=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
+alpine_branch="$(echo "$ALPINE_VERSION" | awk -F. '{gsub("^v", "", $1); print "v"$1"."$2}')"
+
 tmpdir="$(mktemp -d -t rpi-img.XXXXXXXXXX)"
-artifact_file="$script_dir/alpine-rpi-$alpine_branch-$arch.img"
+artifact_file="$script_dir/alpine-rpi-$alpine_branch-$ALPINE_ARCH.img"
 rootfs="$tmpdir/alpine-rootfs"
 boot_dir="$rootfs/boot"
 
@@ -63,7 +61,7 @@ mkdir -p "$boot_dir"
 mount --make-private "$BOOT_DEV" "$boot_dir"
 
 sudo ./alpine-chroot-install \
-    -a "$arch" \
+    -a "$ALPINE_ARCH" \
     -b "$alpine_branch" \
     -d "$rootfs" \
     -k "ARCH CI QEMU_EMULATOR RPI_CI_.* TRAVIS_.*" \

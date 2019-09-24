@@ -1,6 +1,6 @@
 #!/bin/sh
 
-set -xe
+set -eux
 
 echo 'brcmfmac' >> /etc/modules
 

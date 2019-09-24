@@ -1,6 +1,6 @@
 #!/bin/sh
 
-set -xe
+set -eux
 
 FIRST_USER_NAME=pi
 

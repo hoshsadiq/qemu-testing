@@ -1,6 +1,6 @@
 #!/bin/sh
 
-set -xe
+set -eux
 
 for service in devfs dmesg mdev; do
 	rc-update add $service sysinit

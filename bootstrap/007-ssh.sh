@@ -1,6 +1,6 @@
 #!/bin/sh
 
-set -xe
+set -eux
 
 apk add openssh-server
 
