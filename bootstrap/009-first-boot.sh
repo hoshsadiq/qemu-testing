@@ -9,7 +9,7 @@ cat <<EOF > /usr/bin/first-boot
 #!/bin/sh
 set -xe
 
-parted ---pretend-input-tty /dev/mmcblk0 resizepart 2 yes 100%
+parted --script /dev/mmcblk0 resizepart 2 yes 100%
 partprobe
 resize2fs /dev/mmcblk0p2
 rc-update del first-boot
@@ -17,7 +17,7 @@ rm /etc/init.d/first-boot /usr/bin/first-boot
 
 cp -f /boot/wpa_supplicant.conf /etc/wpa_supplicant/wpa_supplicant.conf
 
-apk del resizepart
+apk del resizepart e2fsprogs-extra parted
 
 reboot
 EOF

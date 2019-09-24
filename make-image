@@ -6,6 +6,7 @@ set -xe
 
 alpine_branch=v3.10
 arch=aarch64
+export RPI_CI_DTB_FILES=".*-rpi-3-b-plus.dtb$"
 
 script_dir=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
@@ -20,7 +21,7 @@ clean_up() {
 	[ -n "$tmpdir" ] && rm -rf "$tmpdir"
 	losetup --detach-all # todo this should be only the current loop
 }
-trap clean_up EXIT SIGTERM SIGINT SIGQUIT
+trap clean_up SIGTERM SIGINT SIGQUIT
 
 run_bootstrap() {
     find "$script_dir/bootstrap" -name "*.sh" -print0 \
@@ -61,7 +62,12 @@ mount --make-private "$ROOT_DEV" "$rootfs"
 mkdir -p "$boot_dir"
 mount --make-private "$BOOT_DEV" "$boot_dir"
 
-sudo ./alpine-chroot-install -a "$arch" -b "$alpine_branch" -d "$rootfs"
+sudo ./alpine-chroot-install \
+    -a "$arch" \
+    -b "$alpine_branch" \
+    -d "$rootfs" \
+    -k "ARCH CI QEMU_EMULATOR RPI_CI_.* TRAVIS_.*" \
+    -p "ca-certificates ssl_client"
 
 run_bootstrap
 

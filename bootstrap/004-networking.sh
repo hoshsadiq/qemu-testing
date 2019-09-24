@@ -15,4 +15,3 @@ EOF
 
 # avahi
 apk add dbus avahi
-apk add linux-firmware-brcm
