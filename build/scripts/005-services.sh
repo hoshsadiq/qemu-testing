@@ -11,7 +11,7 @@ for service in modules sysctl hostname bootmisc swclock syslog; do
 done
 rc-update del hwclock boot || true
 
-for service in dbus local networking avahi-daemon bluetooth; do
+for service in dbus local networking avahi-daemon; do
 	rc-update add $service default
 done
 

@@ -8,10 +8,11 @@ script_dir=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
 alpine_branch="$(echo "$ALPINE_VERSION" | awk -F. '{gsub("^v", "", $1); print "v"$1"."$2}')"
 
-tmpdir="$(mktemp -d -t rpi-img.XXXXXXXXXX)"
-artifact_file="$script_dir/alpine-rpi-$alpine_branch-$ALPINE_ARCH.img"
-rootfs="$tmpdir/alpine-rootfs"
+tmpdir="$(mktemp -d -t "alpine-rpi-$ALPINE_VERSION-$ALPINE_ARCH.XXXXXXXXXX")"
+artifact_file="$script_dir/alpine-rpi-$ALPINE_VERSION-$ALPINE_ARCH.img"
+rootfs="$tmpdir"
 boot_dir="$rootfs/boot"
+build_dir="$rootfs/build"
 
 clean_up() {
 	[ -x "$rootfs/destroy" ] && "$rootfs/destroy" -y || true
@@ -59,6 +60,8 @@ mkdir -p "$rootfs"
 mount --make-private "$ROOT_DEV" "$rootfs"
 mkdir -p "$boot_dir"
 mount --make-private "$BOOT_DEV" "$boot_dir"
+mkdir -p "$build_dir"
+mount --make-private "$script_dir/build" "$build_dir"
 
 sudo ./alpine-chroot-install \
     -a "$ALPINE_ARCH" \
@@ -67,18 +70,23 @@ sudo ./alpine-chroot-install \
     -k "ARCH CI QEMU_EMULATOR RPI_CI_.* TRAVIS_.*" \
     -p "ca-certificates ssl_client"
 
-run_bootstrap
-
-rm -rf "$rootfs/var/lib/apt/lists/"*
-rm -rf "$rootfs/var/cache/apk/"*
-rm -rf "$rootfs/root/"* "$rootfs/root/".* || true
-#rm -rf "$rootfs/bootstrap/"
-rm "$rootfs/enter-chroot"
-rm "$rootfs/destroy"
-rm "$rootfs/etc/resolv.conf"
-rm "$rootfs/env.sh"
+"$rootfs/enter-chroot" /build/run.sh
 
 umount -lf "$rootfs"
+
+file_dirs=( \
+    var/cache/apk \
+    root \
+    enter-chroot \
+    destroy \
+    etc/resolv.conf \
+    env.sh \
+)
+for file_dir in "${file_dirs[@]}"; do
+    file_dir="$rootfs/$file_dir"
+    [[ -d "$file_dir" ]] && find "$file_dir" -mindepth 1 -delete
+    [[ -f "$file_dir" ]] && rm "$file_dir"
+done
 
 # shrink image
 ROOT_PART_START=$(parted -ms "$artifact_file" unit B print | awk -F: 'END{gsub("B$", "", $2); print $2}')

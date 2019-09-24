@@ -1,0 +1,9 @@
+disable_splash=0
+boot_delay=0
+
+arm_control=0x200
+kernel=vmlinuz-rpi
+initramfs=initramfs-rpi
+
+# use usercfg.txt to change other settings as this file may get overwritten
+include usercfg.txt
