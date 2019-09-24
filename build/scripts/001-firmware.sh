@@ -4,7 +4,8 @@ set -eux
 
 apk add linux-rpi
 apk add linux-firmware-brcm
-apk add raspberrypi-bootloader
+apk add raspberrypi-bootloader-cutdown
+#apk add raspberrypi-bootloader
 
 
 apk manifest linux-rpi | \
