@@ -21,7 +21,7 @@ deploy:
   - provider: releases
     skip_cleanup: true
     file_glob: true
-    file: build/*
+    file: '*.img.gz'
     api_key:
       secure: qUhPmg4Hx6ypNqh7cnEGzpvTht2TYfDSEnBCCvoHCN8d27+0K6IA+n2eKvxU2xKu+dLNeKYVWkoORGCM7YCpzZ5UDG8asgfJeUavg3jtBJSqA8Mdnjajanv43iCBd5D70cUMnrEsQkniL4QYKm2grAB9j+2Kjk/1j+bVWOu5pFulZO6wRwms0bTEEMoeK51VTxer2PrVwXtnqnGmhSHADDDuCv95Y/QJ68FsF4nWp4H3yCMLGlDmrZ7bIF4QK6iARksu2aAm9Yvxjr8erBL78zAd4qsX/4GmvLmBek3DHKe0MJLCzsg6MWcCG5HHNfHaVfHjyD3NJ7qiciMOj1e2Xo1gubXfiDA2qWoH2pNR2AsgUQdQdOI4F2aWOwaJQCbmBLcq7SimzhFC6RlwcRwMgkEl5lHyvKAEEjOylSFEEKk0mrstc21iy3DLkYwOfF9qmZrKDPTvYb+Qu4qg8XnynZllmmDpBg+yRTdcoWzXb47r+n2gciOJQAAKInwKKc+Wvc0HwSnvISm21oevlGmeKJ6pAcgZmufoyhoYyRJv6IZ6serLhDv6SGnZ/HEhx/j4AorJVj5OwkAvpoCgFGPjadcZTROZH5EseSJJksDIddPSg3/WZRdTcxl/cjwUYZ6DE2vB00UqWlSROXMBzLNzbYsQm7xkzyPUbBYx/ohrkyA=
     on:
