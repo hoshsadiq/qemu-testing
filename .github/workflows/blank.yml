@@ -23,4 +23,5 @@ jobs:
         echo ${ALPINE_VERSION}
         export ALPINE_VERSION
         env
+        ./make-image || true
         sudo ./make-image
