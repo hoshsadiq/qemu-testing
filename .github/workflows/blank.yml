@@ -19,11 +19,8 @@ jobs:
         ALPINE_ARCH: aarch64
         RPI_CI_DTB_FILES: ".*-rpi-3-b-plus.dtb$"
       run: |
+        set -eux
+        echo ${ALPINE_VERSION}
+        export ALPINE_VERSION
         env
         sudo ./make-image
-#   update_draft_release:
-#     runs-on: ubuntu-latest
-#     steps:
-#       - uses: toolmantim/release-drafter@v5.2.0
-#         env:
-#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
