@@ -13,6 +13,12 @@ sed -i \
 
 rc-update add wpa_supplicant default
 
+# todo needs to be idempotent
+cat <<'EOF' >> /etc/network/interfaces
+auto wlan0
+iface wlan0 inet dhcp
+EOF
+
 cat <<EOF > /boot/wpa_supplicant.conf
 network={
  ssid="SSID"
