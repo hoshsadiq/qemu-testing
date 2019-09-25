@@ -2,28 +2,45 @@ dist: bionic
 language: minimal
 git:
   depth: 1
+
+stages:
+  - build-base
+  - test
+
+jobs:
+  include:
+    - stage: build-base
+      workspaces:
+        create:
+          name: base-image
+      before_script:
+        - set -e
+        - curl -fsSL -O "https://raw.githubusercontent.com/hoshsadiq/alpine-chroot-install/destroy-script/alpine-chroot-install" # todo checksum this
+        - chmod +x alpine-chroot-install
+      script:
+        - sudo ./make-image
+      deploy: ~
+
+
 env:
   global:
     - ALPINE_VERSION=3.10.2
   matrix:
     - ALPINE_ARCH=aarch64       RPI_CI_DTB_FILES=".*-rpi-3-b-plus.dtb$"
-before_script:
-  - set -e
-  - curl -fsSL -O "https://raw.githubusercontent.com/hoshsadiq/alpine-chroot-install/destroy-script/alpine-chroot-install" # todo checksum this
-  - chmod +x alpine-chroot-install
 
+workspaces:
+  use:
+    - base-image
 script:
   - ls -la
-  - sudo ./make-image
-  - ls -la
 
-deploy:
-  - provider: releases
-    skip_cleanup: true
-    file_glob: true
-    file: '*.img.gz'
-    api_key:
-      secure: qUhPmg4Hx6ypNqh7cnEGzpvTht2TYfDSEnBCCvoHCN8d27+0K6IA+n2eKvxU2xKu+dLNeKYVWkoORGCM7YCpzZ5UDG8asgfJeUavg3jtBJSqA8Mdnjajanv43iCBd5D70cUMnrEsQkniL4QYKm2grAB9j+2Kjk/1j+bVWOu5pFulZO6wRwms0bTEEMoeK51VTxer2PrVwXtnqnGmhSHADDDuCv95Y/QJ68FsF4nWp4H3yCMLGlDmrZ7bIF4QK6iARksu2aAm9Yvxjr8erBL78zAd4qsX/4GmvLmBek3DHKe0MJLCzsg6MWcCG5HHNfHaVfHjyD3NJ7qiciMOj1e2Xo1gubXfiDA2qWoH2pNR2AsgUQdQdOI4F2aWOwaJQCbmBLcq7SimzhFC6RlwcRwMgkEl5lHyvKAEEjOylSFEEKk0mrstc21iy3DLkYwOfF9qmZrKDPTvYb+Qu4qg8XnynZllmmDpBg+yRTdcoWzXb47r+n2gciOJQAAKInwKKc+Wvc0HwSnvISm21oevlGmeKJ6pAcgZmufoyhoYyRJv6IZ6serLhDv6SGnZ/HEhx/j4AorJVj5OwkAvpoCgFGPjadcZTROZH5EseSJJksDIddPSg3/WZRdTcxl/cjwUYZ6DE2vB00UqWlSROXMBzLNzbYsQm7xkzyPUbBYx/ohrkyA=
-    on:
-      repo: hoshsadiq/qemu-testing
-#      tags: true
+#deploy:
+#  - provider: releases
+#    skip_cleanup: true
+#    file_glob: true
+#    file: '*.img.gz'
+#    api_key:
+#      secure: qUhPmg4Hx6ypNqh7cnEGzpvTht2TYfDSEnBCCvoHCN8d27+0K6IA+n2eKvxU2xKu+dLNeKYVWkoORGCM7YCpzZ5UDG8asgfJeUavg3jtBJSqA8Mdnjajanv43iCBd5D70cUMnrEsQkniL4QYKm2grAB9j+2Kjk/1j+bVWOu5pFulZO6wRwms0bTEEMoeK51VTxer2PrVwXtnqnGmhSHADDDuCv95Y/QJ68FsF4nWp4H3yCMLGlDmrZ7bIF4QK6iARksu2aAm9Yvxjr8erBL78zAd4qsX/4GmvLmBek3DHKe0MJLCzsg6MWcCG5HHNfHaVfHjyD3NJ7qiciMOj1e2Xo1gubXfiDA2qWoH2pNR2AsgUQdQdOI4F2aWOwaJQCbmBLcq7SimzhFC6RlwcRwMgkEl5lHyvKAEEjOylSFEEKk0mrstc21iy3DLkYwOfF9qmZrKDPTvYb+Qu4qg8XnynZllmmDpBg+yRTdcoWzXb47r+n2gciOJQAAKInwKKc+Wvc0HwSnvISm21oevlGmeKJ6pAcgZmufoyhoYyRJv6IZ6serLhDv6SGnZ/HEhx/j4AorJVj5OwkAvpoCgFGPjadcZTROZH5EseSJJksDIddPSg3/WZRdTcxl/cjwUYZ6DE2vB00UqWlSROXMBzLNzbYsQm7xkzyPUbBYx/ohrkyA=
+#    on:
+#      repo: hoshsadiq/qemu-testing
+##      tags: true
