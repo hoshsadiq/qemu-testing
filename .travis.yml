@@ -13,6 +13,8 @@ jobs:
       workspaces:
         create:
           name: base-image
+          paths:
+            - .
       before_script:
         - set -e
         - curl -fsSL -O "https://raw.githubusercontent.com/hoshsadiq/alpine-chroot-install/destroy-script/alpine-chroot-install" # todo checksum this
