@@ -15,8 +15,8 @@ jobs:
         chmod +x alpine-chroot-install
     - name: Run a one-line script
       env:
-        - ALPINE_ARCH=aarch64
-        - RPI_CI_DTB_FILES=".*-rpi-3-b-plus.dtb$"
+        ALPINE_ARCH: aarch64
+        RPI_CI_DTB_FILES: ".*-rpi-3-b-plus.dtb$"
       run: env && ./make-image
 #   update_draft_release:
 #     runs-on: ubuntu-latest
