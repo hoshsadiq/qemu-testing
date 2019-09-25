@@ -20,7 +20,6 @@ jobs:
         RPI_CI_DTB_FILES: ".*-rpi-3-b-plus.dtb$"
       run: |
         env
-        export ALPINE_VERSION
         sudo ./make-image
 #   update_draft_release:
 #     runs-on: ubuntu-latest
