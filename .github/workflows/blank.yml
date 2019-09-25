@@ -18,7 +18,10 @@ jobs:
         ALPINE_VERSION: v3.10.2
         ALPINE_ARCH: aarch64
         RPI_CI_DTB_FILES: ".*-rpi-3-b-plus.dtb$"
-      run: env && sudo ./make-image
+      run: |
+        env
+        export ALPINE_VERSION
+        sudo ./make-image
 #   update_draft_release:
 #     runs-on: ubuntu-latest
 #     steps:
